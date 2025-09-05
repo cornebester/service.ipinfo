@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # annotations:
+  labels:
+    service: service-ipinfo
+    env: dev
+    app: service-ipinfo
+  name: service-ipinfo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service: service-ipinfo
+  strategy: {}
+  template:
+    metadata:
+      # annotations:
+      labels:
+        service: service-ipinfo
+        env: dev
+        app: service-ipinfo
+    spec:
+      containers:
+        - name: service-container-ipinfo
+          image: <replace_me>.dkr.ecr.eu-west-1.amazonaws.com/service.ipinfo:latest
+          imagePullPolicy: IfNotPresent # IfNotPresent # Never needed for local / dev repo access on minikube. IfNotPresent needed for docker-desktop k8s
+          env:
+            # - name: ipinfo_access_token
+            #   value: xxxxxxx
+            - name: IPINFO_ACCESS_TOKEN #  env var name on pod
+              valueFrom:
+                secretKeyRef:
+                  name: ipinfo-access-token
+                  key: ipinfo_key
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: service-ipinfo # does not have to match env var
+                  key: LOG_LEVEL # does not have to match env var
+          ports:
+            - containerPort: 8081
+          readinessProbe:
+            httpGet:
+              path: /healthr
+              port: 8081
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthl
+              port: 8081
+            initialDelaySeconds: 5
+          resources:  # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+            requests:
+              cpu: 0.5
+              memory: 250M
+            limits:
+              cpu: 1.0
+              memory: 500M
+      restartPolicy: Always
+status: {}

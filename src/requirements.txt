@@ -1,0 +1,6 @@
+ipinfo
+flask
+redis
+gunicorn
+python-json-logger==2.0.1
+autopep8==1.5.7
