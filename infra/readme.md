@@ -1,9 +1,10 @@
 # readme
 
-creates vpc ( using aws module  ) and eks cluster ( using resources ) with 2 worker nodes in private subnet ( 1x nat gw )
+creates vpc (using aws module) and eks cluster (using individual resources) with 2 worker nodes in private subnet ( 1x nat gw )
 
 # requirements
 
+terraform 
 aws cli and profile/secrets updated
 kubectl
 eksctl https://docs.aws.amazon.com/eks/latest/eksctl/installation.html
