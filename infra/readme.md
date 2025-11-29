@@ -6,7 +6,7 @@ creates vpc and eks cluster with 2 worker nodes in private subnet ( 1x nat gw )
 
 aws cli and profile/secrets updated
 kubectl
-eksctl
+eksctl https://docs.aws.amazon.com/eks/latest/eksctl/installation.html
 helm
 
 ## add / switch context
