@@ -1,6 +1,6 @@
 # readme
 
-creates vpc and eks cluster with 2 worker nodes in private subnet ( 1x nat gw )
+creates vpc ( using aws module  ) and eks cluster ( using resources ) with 2 worker nodes in private subnet ( 1x nat gw )
 
 # requirements
 
