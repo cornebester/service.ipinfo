@@ -129,6 +129,18 @@ def root():
                 dict(request.headers).get("X-Forwarded-For") or ""
             ),
         )
+    except TimeoutError as r:
+        application.logger.error("Redis Timeout Error: %s", r)
+        return html.format(
+            hostname=escape(socket.gethostname()),
+            visits="<i>Redis Timeout</i>",
+            ext_ip=escape(response["ip"]),
+            remote_addr=escape(request.remote_addr or ""),
+            log_level=escape(log_level),
+            header_xforwardfor=escape(
+                dict(request.headers).get("X-Forwarded-For") or ""
+            ),
+        )
 
     except Exception as e:
         # Handle any other unexpected errors
@@ -138,16 +150,21 @@ def root():
 
 @application.route("/healthr")
 def readiness():
-    """ """
+    """
+    Basic readiness check - check redis connection.
+    Redis used for stats
+    """
     try:
         application.logger.info("Checking if redis alive")
         if redis_conn_obj is not None and redis_conn_obj.ping():
-            read = redis_conn_obj.get("counter")
-            check = redis_conn_obj.ping()
+            # read = redis_conn_obj.get("counter")
+            # check = redis_conn_obj.ping()
             return html_health_checkr
         else:
             application.logger.error("redis not available")
             return "readiness check - fail", 500
+    except TimeoutError as r:
+        application.logger.error("Redis Timeout Error: %s", r)
 
     except Exception as e:
         # Handle any other unexpected errors
@@ -157,8 +174,9 @@ def readiness():
 
 @application.route("/healthl")
 def liveness():
-    """ """
-
+    """
+    Basic liveness check 
+    """
     try:
         return html_health_checkl
 
@@ -207,7 +225,10 @@ def stats():
                 top5[ip] = int(redis_conn_obj.get(ip).decode("utf-8"))
             return top5
         else:
-            return "<i>No statistics Redis unavailable</i>", 500
+            return "<i>No statistics. Redis is unavailable</i>", 500
+    except TimeoutError as r:
+        application.logger.error("Redis Timeout Error: %s", r)
+    
     except Exception as e:
         # Handle any other unexpected errors
         application.logger.exception(e)

@@ -1,23 +1,29 @@
 version: '3.3'
+name: service_ipinfo_stack
+networks:
+  default:
+      name: service_ipinfo_network
 services:
     application:
-      container_name: 'service.ipinfo'
+      container_name: service_ipinfo
       #build: ./src
-      # image: '<replace_me>.dkr.ecr.eu-west-1.amazonaws.com/misc/service.ipinfo:1.0.15' #'service.ipinfo:latest'
+      # image: '146632099925.dkr.ecr.eu-west-1.amazonaws.com/misc/service.ipinfo:1.0.15' #'service.ipinfo:latest'
       image: 'service.ipinfo:latest' #'service.ipinfo:latest'
       ports:
         - 8081:8081
       environment: 
-        - ipinfo_access_token=${ipinfo_access_token}
-        - LOG_LEVEL=${LOG_LEVEL}
+        IPINFO_ACCESS_TOKEN: ${IPINFO_ACCESS_TOKEN} # linux host or env file only. not PS
+        LOG_LEVEL: ${LOG_LEVEL} # linux host or env file only. not PS
+        GUNICORN_WORKERS: ${GUNICORN_WORKERS} # linux host or env file only. not PS
+        REDIS_HOST: ${REDIS_HOST} # linux host or env file only. not PS
       #command: gunicorn -b 0.0.0.0:81 --access-logfile=- --error-logfile=- --log-level=info application # override dockerfile cmd
       command: gunicorn -b 0.0.0.0:${WSGI_PORT:-8081} --access-logfile=- --error-logfile=- --log-level=${LOG_LEVEL} --timeout=600 --workers=${GUNICORN_WORKERS} --worker-tmp-dir /dev/shm application # override dockerfile cmd and use env var
       logging:
         # driver: "fluentd"
         options:
           # fluentd-address: 192.168.10.80:24225
-          labels: service-ipinfo
-          tag: service-ipinfo
+          labels: service_ipinfo
+          tag: service_ipinfo
     redis:
-        container_name: 'redis'
+        container_name: redis
         image: redis

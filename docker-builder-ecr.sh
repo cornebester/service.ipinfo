@@ -2,14 +2,14 @@
 
 set -ex
 
-aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin <replace_me>.dkr.ecr.eu-west-1.amazonaws.com
+aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 146632099925.dkr.ecr.eu-west-1.amazonaws.com
 
 PARENT_DIR=$(basename "${PWD%/*}")
 CURRENT_DIR="${PWD##*/}"
 IMAGE_NAME="$CURRENT_DIR"
 TAG="${1}"
 
-REGISTRY="<replace_me>.dkr.ecr.eu-west-1.amazonaws.com/misc"
+REGISTRY="146632099925.dkr.ecr.eu-west-1.amazonaws.com/misc"
 
 docker build -t ${IMAGE_NAME}:${TAG} .
 docker tag ${IMAGE_NAME}:${TAG} ${REGISTRY}/${IMAGE_NAME}:latest    # tag new (local) image as latest

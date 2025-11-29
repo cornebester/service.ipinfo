@@ -22,6 +22,8 @@ spec:
         env: dev
         app: redis
     spec:
+      nodeSelector:
+        instance_type: on_demand
       containers:
         - image: redis
           name: redis

@@ -27,10 +27,17 @@ deploy
     kubectl apply -f ./k8s_config/service-ipinfo-deployment.yaml --namespace my-apps
     kubectl apply -f ./k8s_config/service-ipinfo-service.yaml --namespace my-apps
 
+
+    kubectl apply -f ./k8s_config/service-ipinfo-service-alb.yaml --namespace my-apps
+    kubectl apply -f ./k8s_config/alb-ingress.yaml --namespace my-apps
+
     kubectl delete -f ./k8s_config/redis-service.yaml --namespace my-apps
     kubectl delete -f ./k8s_config/redis-deployment.yaml --namespace my-apps
     kubectl delete -f ./k8s_config/service-ipinfo-service.yaml --namespace my-apps
     kubectl delete -f ./k8s_config/service-ipinfo-deployment.yaml --namespace my-apps
+
+    kubectl delete -f ./k8s_config/alb-ingress.yaml --namespace my-apps
+    kubectl delete -f ./k8s_config/service-ipinfo-service-alb.yaml --namespace my-apps
 
 To update deployment, just edit manifest and apply again
 
@@ -43,7 +50,7 @@ To update deployment, just edit manifest and apply again
 
 secrets
 
-    kubectl create secret generic ipinfo-access-token --from-literal=ipinfo_key=xxxx -n my-apps
+    kubectl create secret generic ipinfo-access-token --from-literal=ipinfo_key=0b6199f5f6f759 -n my-apps
     kubectl get secret ipinfo-access-token -n my-apps
     kubectl get secret ipinfo-access-token -o yaml -n my-apps
     kubectl get secret ipinfo-access-token -o jsonpath='{.data}' -n my-apps | jq .ipinfo_key
@@ -51,6 +58,8 @@ secrets
     echo "xxxxx" | base64 --decode  
 
     kubectl exec -it application-c8bf97c4f-kvwnq printenv
+
+    kubectl delete secret/ipinfo-access-token   
 
 UPDATE secret
 
@@ -71,6 +80,24 @@ UPDATE configmap
     kubectl create configmap service-ipinfo --from-env-file=./k8s_config/myconfigs.txt -n my-apps --dry-run -o yaml \
     | kubectl apply -f -
 
+
+    PS
+
+        kubectl create configmap service-ipinfo --from-env-file=myconfigs.txt -n my-apps --dry-run -o yaml `
+    | kubectl apply -f -
+
 Alternate ( having secrets in config map not ideal)
 
     kubectl create configmap <> --from-env-file=.env
+
+
+kubectl get service -A
+kubectl get INGRESS  -A
+
+kubectl delete <resource-type> <resource-name> -n <namespace-name>
+kubectl delete all --all -n my-apps
+
+kubectl get all -A
+kubectl get all 
+kubectl get pods,svc,secrets,configmaps,deployments -n my-apps
+
