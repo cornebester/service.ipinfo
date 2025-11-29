@@ -50,6 +50,10 @@ The eksctl utils associate-iam-oidc-provider command is used to enable IAM Roles
 - https://github.com/aws/eks-charts/blob/master/stable/aws-load-balancer-controller/values.yaml
 - https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.11.0/docs/examples/2048/2048_full.yaml
 - https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/examples/echo_server/#setup-the-aws-load-balancer-controller
+- https://docs.aws.amazon.com/eks/latest/userguide/lbc-helm.html
+- https://repost.aws/knowledge-center/eks-alb-ingress-controller-fargate
+- https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-alb.html#_step_4_create_ingress
+- 
 
 ```shell
 helm repo add eks https://aws.github.io/eks-charts
