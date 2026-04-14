@@ -18,7 +18,7 @@ import ipinfo
 logger = logging.getLogger(__name__)
 
 
-log_level = os.getenv("LOG_LEVEL", "INFO")
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logger.setLevel(log_level)
 
 logger.warning("ROOT LOG_LEVEL set to: %s", log_level)
