@@ -208,11 +208,5 @@ resource "aws_eks_addon" "vpc_cni" {
   resolve_conflicts_on_update = "PRESERVE"
 }
 
-resource "aws_eks_addon" "aws-ebs-csi-driver" {
-  cluster_name = aws_eks_cluster.eks_lab.name
-  addon_name   = "aws-ebs-csi-driver"
-  # addon_version               = "v1.10.1-eksbuild.1" #e.g., previous version v1.9.3-eksbuild.3 and the new version is v1.10.1-eksbuild.1
-  resolve_conflicts_on_update = "PRESERVE"
-  service_account_role_arn    = aws_iam_role.ebs-csi-controller-sa.arn
-}
+
 
