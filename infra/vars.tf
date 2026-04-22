@@ -7,3 +7,7 @@ variable "default_spot_notification_email_address" {
   default = ""
   type    = string
 }
+
+variable "my_trusted_ips" {
+  type = list(string)
+}
