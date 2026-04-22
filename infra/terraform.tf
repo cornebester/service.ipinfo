@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-west-1"
+  region = var.default_region
   # profile = var.aws_profile
   #version = "~> 1.0"
 

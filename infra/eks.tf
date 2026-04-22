@@ -5,7 +5,7 @@ module "eks_vpc" {
   name = "eks-vpc"
   cidr = "10.128.0.0/16"
 
-  azs             = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  azs             = [data.aws_availability_zones.available.names[0], data.aws_availability_zones.available.names[1], data.aws_availability_zones.available.names[2]]
   private_subnets = ["10.128.1.0/24", "10.128.2.0/24", "10.128.3.0/24"]
   public_subnets  = ["10.128.101.0/24", "10.128.102.0/24", "10.128.103.0/24"]
 
@@ -193,41 +193,13 @@ resource "aws_eks_node_group" "on_demand" {
     aws_iam_role_policy_attachment.worker_node_AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.worker_node_AmazonEC2ContainerRegistryReadOnly,
     aws_iam_role_policy_attachment.worker_node_AmazonEKS_CNI_Policy,
+
     # aws_eks_addon.vpc_cni
   ]
 }
 
 
 
-resource "aws_eks_access_entry" "corne" {
-  cluster_name  = aws_eks_cluster.eks_lab.name
-  principal_arn = "arn:aws:iam::146632099925:user/corne.bester" # aws_iam_role.example.arn
-  # kubernetes_groups = ["group-1", "group-2"]
-  type = "STANDARD"
-}
-
-
-resource "aws_eks_access_policy_association" "corne_AmazonEKSAdminPolicy" {
-  cluster_name  = aws_eks_cluster.eks_lab.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-  principal_arn = "arn:aws:iam::146632099925:user/corne.bester"
-
-  access_scope {
-    type = "cluster" # "namespace"
-    # namespaces = ["example-namespace"]
-  }
-}
-
-resource "aws_eks_access_policy_association" "corne_AmazonEKSClusterAdminPolicy" {
-  cluster_name  = aws_eks_cluster.eks_lab.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-  principal_arn = "arn:aws:iam::146632099925:user/corne.bester"
-
-  access_scope {
-    type = "cluster" # "namespace"
-    # namespaces = ["example-namespace"]
-  }
-}
 
 
 resource "aws_eks_addon" "vpc_cni" {
@@ -237,43 +209,11 @@ resource "aws_eks_addon" "vpc_cni" {
   resolve_conflicts_on_update = "PRESERVE"
 }
 
-resource "aws_iam_policy" "AWSLoadBalancerControllerIAMPolicy" {
-  name        = "AWSLoadBalancerControllerIAMPolicy"
-  description = "AWSLoadBalancerControllerIAMPolicy"
-  policy      = file("AWSLoadBalancerControllerIAMPolicy.json")
+resource "aws_eks_addon" "aws-ebs-csi-driver" {
+  cluster_name = aws_eks_cluster.eks_lab.name
+  addon_name   = "aws-ebs-csi-driver"
+  # addon_version               = "v1.10.1-eksbuild.1" #e.g., previous version v1.9.3-eksbuild.3 and the new version is v1.10.1-eksbuild.1
+  resolve_conflicts_on_update = "PRESERVE"
+  service_account_role_arn    = aws_iam_role.ebs-csi-controller-sa.arn
 }
-
-# data "aws_iam_policy_document" "assume_role_AWSLoadBalancerControllerIAMPolicy" {
-#   statement {
-#     effect = "Allow"
-
-#     principals {
-#       type        = "Service"
-#       identifiers = ["pods.eks.amazonaws.com"]
-#     }
-
-#     actions = [
-#       "sts:AssumeRole",
-#       "sts:TagSession"
-#     ]
-#   }
-# }
-
-# resource "aws_iam_role" "AWSLoadBalancerControllerIAMPolicy" {
-#   name               = "eks-pod-identity-example_AWSLoadBalancerControllerIAMPolicy"
-#   assume_role_policy = data.aws_iam_policy_document.assume_role_AWSLoadBalancerControllerIAMPolicy.json
-# }
-
-# resource "aws_iam_role_policy_attachment" "example_s3" {
-#   policy_arn =  aws_iam_policy.alb.arn
-#   role       = aws_iam_role.AWSLoadBalancerControllerIAMPolicy.name
-# }
-
-# resource "aws_eks_pod_identity_association" "AWSLoadBalancerControllerIAMPolicy" {
-#   cluster_name    = aws_eks_cluster.eks_lab.name
-#   namespace       = "kube-system"
-#   service_account = "aws-load-balancer-controller"
-#   role_arn        = aws_iam_role.AWSLoadBalancerControllerIAMPolicy.arn
-# } 
-
 
