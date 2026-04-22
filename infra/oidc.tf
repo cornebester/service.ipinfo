@@ -11,6 +11,6 @@ resource "aws_iam_openid_connect_provider" "eks_oidc" {
   url             = aws_eks_cluster.eks_lab.identity[0].oidc[0].issuer
 
   tags = {
-    Name = "eks-lab-oidc-provider"
+    Name = "${aws_eks_cluster.eks_lab.name}-oidc-provider"
   }
 }
