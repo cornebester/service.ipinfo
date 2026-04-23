@@ -11,3 +11,7 @@ variable "default_spot_notification_email_address" {
 variable "my_trusted_ips" {
   type = list(string)
 }
+
+variable "my_iam_user_arn" {
+  type = string
+}

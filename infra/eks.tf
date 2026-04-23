@@ -33,7 +33,7 @@ resource "aws_eks_cluster" "eks_lab" {
     subnet_ids              = module.eks_vpc.private_subnets
     endpoint_private_access = true
     endpoint_public_access  = true
-    public_access_cidrs = var.my_trusted_ips
+    public_access_cidrs     = var.my_trusted_ips
   }
 
   # Ensure that IAM Role permissions are created before and deleted
