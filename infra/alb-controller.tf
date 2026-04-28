@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "alb_controller_assume_role" {
     condition {
       test     = "StringEquals"
       variable = "${replace(aws_iam_openid_connect_provider.eks_oidc.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
+      values   = ["system:serviceaccount:kube-system:eks-alb-controller-role"]
     }
 
     principals {
