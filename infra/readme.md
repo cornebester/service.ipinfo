@@ -56,11 +56,11 @@ using aws cli
 using kubectl
 
 ```shell
-    kubectl config use-context  arn:aws:eks:eu-west-1:146632099925:cluster/eks-lab
+    kubectl config use-context  arn:aws:eks:eu-west-1:<replace_me_account_id>:cluster/eks-lab
 ```
 
 
-## ebs csi driver k8s service account add
+## ebs csi driver create k8s svc account( manually ) and annotate with tf created role (optional - done with tf now)
 
 - ebs csi driver / addon added with tf
 - aws role and policy created with tf
@@ -90,7 +90,7 @@ kubectl delete serviceaccount ebs-csi-controller-sa \
 
 ## metricserver
 
-install metricserver ( default single pod )
+install metricserver ( default is single pod )
 
 ```shell
     kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
@@ -103,7 +103,11 @@ install metricserver ( default single pod )
 
 ## AWS LB Controller
 
-### create k8s svc account and iam role ( manually )
+### using tf
+
+default
+
+### create k8s svc account( manually ) and annotate with tf created role 
 
 create k8s service account
 
@@ -120,6 +124,13 @@ kubectl annotate serviceaccount eks-alb-controller-role \
   eks.amazonaws.com/role-arn=arn:aws:iam::<replace_me_account_id>:role/eks-alb-controller-role
 ```
 
+cleanup/delete if needed
+
+```shell
+kubectl delete serviceaccount eks-alb-controller-role \
+  --namespace kube-system 
+```
+
 ### create k8s svc account and iam role ( using eksctl, conditional if not partially done with tf)
 
 - **interferes with terraform created roles/policy**
@@ -127,11 +138,11 @@ kubectl annotate serviceaccount eks-alb-controller-role \
 - update role arn/account/region etc
 
 ```shell
-    eksctl.exe create iamserviceaccount `
+    eksctl create iamserviceaccount `
     --cluster=eks-lab `
     --namespace=kube-system `
     --name=eks-alb-controller-role `
-    --attach-policy-arn=arn:aws:iam::146632099925:policy/AWSLoadBalancerControllerIAMPolicy `
+    --attach-policy-arn=arn:aws:iam::<replace_me_account_id>:policy/AWSLoadBalancerControllerIAMPolicy `
     --region eu-west-1 `
     --approve
 ```
@@ -139,7 +150,7 @@ kubectl annotate serviceaccount eks-alb-controller-role \
 (optional) to delete
 
 ```shell
-    eksctl.exe  delete iamserviceaccount --cluster=eks-lab --name eks-alb-controller-role
+    eksctl  delete iamserviceaccount --cluster=eks-lab --name eks-alb-controller-role
 ```
 
 ### install aws lb controller using helm
