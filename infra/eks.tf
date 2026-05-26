@@ -12,6 +12,10 @@ module "eks_vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
+  # Enable DNS support for VPC endpoints
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
   tags = {
     Environment = "Development"
     # Project     = "MyApplication"
@@ -123,7 +127,7 @@ resource "aws_eks_node_group" "spot" {
   instance_types  = ["t3a.small", "t3.small"] # "t3a.medium",	"t3.medium"
 
   scaling_config {
-    desired_size = 1
+    desired_size = 2
     max_size     = 2
     min_size     = 1
   }
@@ -164,10 +168,10 @@ resource "aws_eks_node_group" "on_demand" {
   subnet_ids      = module.eks_vpc.private_subnets # aws_subnet.example[*].id
   capacity_type   = "ON_DEMAND"
   ami_type        = "AL2023_x86_64_STANDARD"
-  instance_types  = ["t3a.small", "t3.small"] # "t3a.medium",	"t3.medium"
+  instance_types  = ["t3a.medium", "t3.medium"] # "t3a.small", "t3.small"
 
   scaling_config {
-    desired_size = 1
+    desired_size = 2
     max_size     = 2
     min_size     = 1
   }
@@ -207,6 +211,4 @@ resource "aws_eks_addon" "vpc_cni" {
   # addon_version               = "v1.10.1-eksbuild.1" #e.g., previous version v1.9.3-eksbuild.3 and the new version is v1.10.1-eksbuild.1
   resolve_conflicts_on_update = "PRESERVE"
 }
-
-
 

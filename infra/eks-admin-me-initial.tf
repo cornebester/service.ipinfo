@@ -8,17 +8,7 @@ resource "aws_eks_access_entry" "calling_user_or_federated_role_initial" {
   }
 }
 
-resource "aws_eks_access_policy_association" "calling_user_or_federated_role_initial_AmazonEKSAdminPolicy" {
-  cluster_name  = aws_eks_cluster.eks_lab.name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-  principal_arn = data.aws_iam_session_context.current.issuer_arn
-
-  access_scope {
-    type = "cluster" # "namespace"
-    # namespaces = ["example-namespace"]
-  }
-}
-
+# Equivalent to Kubernetes cluster-admin.
 resource "aws_eks_access_policy_association" "calling_user_or_federated_role_initial_AmazonEKSClusterAdminPolicy" {
   cluster_name  = aws_eks_cluster.eks_lab.name
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
@@ -29,3 +19,18 @@ resource "aws_eks_access_policy_association" "calling_user_or_federated_role_ini
     # namespaces = ["example-namespace"]
   }
 }
+
+# Equivalent to Kubernetes admin (cannot edit resource quotas or create ClusterRoleBindings).
+# Usually for namespaced scope, but can be used for cluster scope as well.
+resource "aws_eks_access_policy_association" "calling_user_or_federated_role_initial_AmazonEKSAdminPolicy" {
+  cluster_name  = aws_eks_cluster.eks_lab.name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+  principal_arn = data.aws_iam_session_context.current.issuer_arn
+
+  access_scope {
+    type = "cluster"
+    # type = "namespace"
+    # namespaces = ["example-namespace"] # ["*"]/wildcard not allowed 
+  }
+}
+
